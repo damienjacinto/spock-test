@@ -1,0 +1,48 @@
+apply plugin: "groovy"
+apply plugin: "idea"
+
+version = "1.0"
+description = "Spock Framework - test"
+
+// Spock works with Java 1.7 and above
+sourceCompatibility = 1.7
+
+repositories {
+  // Spock releases are available from Maven Central
+  mavenCentral()
+  // Spock snapshots are available from the Sonatype OSS snapshot repository
+  maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
+}
+
+dependencies {
+  // mandatory dependencies for using Spock
+  compile "org.codehaus.groovy:groovy-all:2.4.15"
+  testCompile "org.spockframework:spock-core:1.2-groovy-2.4"
+
+  // optional dependencies for using Spock
+  testCompile "org.hamcrest:hamcrest-core:1.3" // only necessary if Hamcrest matchers are used
+  testRuntime "net.bytebuddy:byte-buddy:1.8.21" // allows mocking of classes (in addition to interfaces)
+  testRuntime "org.objenesis:objenesis:2.6"    // allows mocking of classes without default constructor (together with CGLIB)
+
+  // dependencies used by examples in this project
+  testRuntime "com.h2database:h2:1.4.197"
+
+  testCompile( 'com.athaydes:spock-reports:1.6.1' ) {
+      transitive = false // this avoids affecting your version of Groovy/Spock
+  }
+  // if you don't already have slf4j-api and an implementation of it in the classpath, add this!
+  testCompile 'org.slf4j:slf4j-api:1.7.13'
+  testCompile 'org.slf4j:slf4j-simple:1.7.13'
+}
+
+// the remaining configuration is specific to this project, and is not required for using Spock
+
+apply from: "gradle/ide.gradle"
+
+task collectJars(type: Copy) {
+    into "$buildDir/output/lib"
+    from configurations.testRuntime
+}
+
+
+
